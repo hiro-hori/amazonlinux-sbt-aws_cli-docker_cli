@@ -1,11 +1,17 @@
-FROM amazonlinux:1
+FROM amazonlinux:2.0.20190508
 
-RUN set -eux; \
+RUN set -eux; set -o pipefail; \
   yum update -y; \
+  amazon-linux-extras install -y \
 # install docker
-  yum install -y docker; \
+    docker \
+# install java to use sbt
+    corretto8; \
+# install sbt
+  curl https://bintray.com/sbt/rpm/rpm | tee /etc/yum.repos.d/bintray-sbt-rpm.repo; \
+  yum install -y sbt \
 # install awscli
-  curl -O https://bootstrap.pypa.io/get-pip.py; \
-  python get-pip.py; \
-  pip install awscli; \
-  yum clean all
+    awscli; \
+# cleaning
+  yum clean all; \
+  rm -fr /var/cache/yum
